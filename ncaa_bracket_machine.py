@@ -350,8 +350,10 @@ if (savedAllPlayers.size == 0):
 # 	print team[0].team.upper()
 # 	print '************************'
 # 	for j, player in enumerate(team):
-# 		print player.name + '\t\t\t',
+# 		print player.name + '\t',
 # 		print str(player.ht) + '\t',
+# 		print str(player.wt) + '\t',
+# 		print str(player.pos) + '\t',
 # 		print str(player.per) + '\t',
 # 		print str(player.tm)
 # 	print '************************\n'
@@ -366,7 +368,8 @@ if (savedAllPlayers.size == 0):
 # 			or player.name.lower() == 'anton grady'
 # 			or player.name.lower() == 'tai wynyard'):
 
-
+for team in longTeamNames:
+	print team.lower()
 
 
 
