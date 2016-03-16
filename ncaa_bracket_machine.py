@@ -14,6 +14,7 @@ class Player(object):
 		self.wt = arr[4]
 		self.yr = arr[5]
 		self.htwn = arr[6]
+		self.team = arr[7]
 
 	def make_player_url(self):
 		playerRefBaseUrl = 'http://www.sports-reference.com/cbb/players/PLAYER_NAME.html'
@@ -180,7 +181,8 @@ for k, singleTeamUrls in enumerate(allTeamUrls, start=0):
 				trs = urlSoup.find_all('tr')[2:]
 				playerArr = np.empty(len(trs), dtype=object)
 				for i, tr in enumerate(trs, start=0):
-					tmpArr = np.zeros(7, dtype=object)
+					tmpArr = np.zeros(8, dtype=object)
+					tmpArr[7] = urlSoup.find('b').get_text()
 					for j, td in enumerate(tr.find_all('td'), start=0):
 						if (j == 3):
 							tmpHt = td.get_text()
@@ -208,26 +210,26 @@ for k, singleTeamUrls in enumerate(allTeamUrls, start=0):
 		allPlayers[k] = playerArr
 		np.save('all_players.npy', allPlayers)
 
-for playerGroup in allPlayers:
-	print '------------------'
-	for player in playerGroup:
-		playerUrl = player.make_player_url()
-		url = urllib.urlopen(playerUrl)
-		playerSoup = bs(url, 'lxml')
-		print playerUrl,
-		if (playerSoup.find('h1') != None):
-			print playerSoup.find('h1').get_text()
-		else:
-			if (playerSoup.select('#search_results > tbody > tr') == None):
-				print '********CHECK URL**********'
-			else:
-				trs = playerSoup.select('#search_results > tbody > tr')
-				print trs
-				print str(len(trs) - 1)
-				desiredPlayerTr = trs[len(trs) - 1]
-				playerHref = desiredPlayerTr.select('a')[0]['href']
-				playerUrl = 'http://www.sports-reference.com' + playerHref
-				print 'New url: ' + playerUrl
+# for playerGroup in allPlayers:
+# 	print '------------------'
+# 	for player in playerGroup:
+# 		playerUrl = player.make_player_url()
+# 		url = urllib.urlopen(playerUrl)
+# 		playerSoup = bs(url, 'lxml')
+# 		print playerUrl,
+# 		if (playerSoup.find('h1') != None):
+# 			print playerSoup.find('h1').get_text()
+# 		else:
+# 			if (playerSoup.select('#search_results > tbody > tr') == None):
+# 				print '********CHECK URL**********'
+# 			else:
+# 				trs = playerSoup.select('#search_results > tbody > tr')
+# 				print trs
+# 				print str(len(trs) - 1)
+# 				desiredPlayerTr = trs[len(trs) - 1]
+# 				playerHref = desiredPlayerTr.select('a')[0]['href']
+# 				playerUrl = 'http://www.sports-reference.com' + playerHref
+# 				print 'New url: ' + playerUrl
 
 
 
