@@ -15,11 +15,110 @@ class Player(object):
 		self.yr = arr[5]
 		self.htwn = arr[6]
 
-def make_player_url(playerName):
-	playerRefBaseUrl = 'http://www.sports-reference.com/cbb/players/PLAYER_NAME.html'
-	formattedPlayerName = playerName.replace(' ', '-', 1)
-	playerUrl = playerRefBaseUrl.replace('PLAYER_NAME', formattedPlayerName, 1)
-	return playerUrl
+	def make_player_url(self):
+		playerRefBaseUrl = 'http://www.sports-reference.com/cbb/players/PLAYER_NAME.html'
+
+		addon = ''
+		# addon = '-1'
+
+		# for a specific cases 
+		# (Temple player Levan Shawn Alston)
+		if 'levan' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('levan ', '')
+		# (Temple player Ayan Nunez de Carvalho)
+		elif 'nunez de carvalho' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('nunez de carvalho', 'nunezdecarvalho')
+		elif 'xeyrius' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('xeyrius', 'xeryius')
+		elif 'hamdy-mohamed' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('hamdy-mohamed', 'hamdymohamed')
+		elif 'jonathan nwankwo' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('jonathan', 'johnathan')
+		elif 'anthony lawrence' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('anthony lawrence', 'anthony-lawrencejr')
+		elif 'pflueger' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('pflueger', 'pfleuger')
+		elif 'mike sutton' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			addon = '-2'
+		elif 'ishmail' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('ishmail', 'ish')
+		elif 'al freeman' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('al', 'allerik')
+		elif 'terry maston' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('terry', 'tj')
+		elif 'carlton bragg' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('bragg', 'braggjr')
+		elif 'eric davis' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('davis', 'davisjr')
+		elif 'kerwin roach' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('roach', 'roachjr')
+		elif 'ricky council' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('council', 'councilii')
+		elif 'yogi ferrell' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('yogi', 'kevin')
+		elif 'varun ram' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('varun', 'varum')
+		elif 'lourawls nairn' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('lourawls', 'lourawls tum tum')
+		elif 'conner george' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('conner', 'connor')
+		elif 'matt van dyk' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('van dyk', 'vandyk')
+		elif 'jon mckeeman' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('jon', 'john')
+		elif 'andy van vliet' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('van vliet', 'vanvliet')
+		elif 'chase miller' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			print 'CHASE MILLER DOESNT EXIST ON SPORTS REFERENCE'
+		elif 'stephen strachan' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			print 'STEPHEN STRACHAN DOESNT EXIST ON SPORTS REFERENCE'
+		elif 'aaron rountree' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('rountree', 'roundtree')
+		elif 'stefan duric' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			print 'STEFAN DURIC DOESNT EXIST ON SPORTS REFERENCE'
+		elif 'david runcie' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			print 'DAVID RUNCIE DOESNT EXIST ON SPORTS REFERENCE'
+		elif 'charles wilson' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('charles', 'charle')
+		elif 'tre houston' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			print 'TRE HOUSTON DOESNT EXIST ON SPORTS REFERENCE'
+		elif 'eugene marshall' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			print 'EUGENE MARSHALL DOESNT EXIST ON SPORTS REFERENCE'
+		elif 'anton grady' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			print 'ANTON GRADY DOESNT EXIST ON SPORTS REFERENCE'
+		elif 'lionel ellison' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('ellison', 'ellisoniii')
+		elif 'jared savage' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('savage', 'savag')
+		elif 'okoroh' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('okoroh', 'okorah')
+		elif 'guzonjic' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('kenan', 'kevin')
+		elif 'malik martin' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('malik', 'malik price')
+		elif 'tai wynyard' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			print 'TAI WYNYARD DOESNT EXIST ON SPORTS REFERENCE'
+		elif 'adrian rodgers' in self.name.lower():
+			formattedPlayerName = self.name.lower()
+			addon = '-2'
+		elif 'd\'adrian allen' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('d\'adrian', 'darian')
+		elif 'p.j. posey' in self.name.lower():
+			formattedPlayerName = self.name.lower().replace('p.j.', 'ravonn')
+		else:
+			formattedPlayerName = self.name.lower()
+		formattedPlayerName = formattedPlayerName.replace(' jr.', '').replace(' sr.', '').replace(' iii', '').replace(' ii', '').replace('\'', '').replace('.', '').replace(' ', '-') + addon
+		playerUrl = playerRefBaseUrl.replace('PLAYER_NAME', formattedPlayerName)
+		return playerUrl
 
 baseUrl = 'http://espn.go.com/mens-college-basketball/teams'
 concatingUrl = 'http://espn.go.com'
@@ -112,8 +211,24 @@ for k, singleTeamUrls in enumerate(allTeamUrls, start=0):
 for playerGroup in allPlayers:
 	print '------------------'
 	for player in playerGroup:
-		playerUrl = make_player_url(player.name)
-		print playerUrl
+		playerUrl = player.make_player_url()
+		url = urllib.urlopen(playerUrl)
+		playerSoup = bs(url, 'lxml')
+		print playerUrl,
+		if (playerSoup.find('h1') != None):
+			print playerSoup.find('h1').get_text()
+		else:
+			if (playerSoup.select('#search_results > tbody > tr') == None):
+				print '********CHECK URL**********'
+			else:
+				trs = playerSoup.select('#search_results > tbody > tr')
+				print trs
+				print str(len(trs) - 1)
+				desiredPlayerTr = trs[len(trs) - 1]
+				playerHref = desiredPlayerTr.select('a')[0]['href']
+				playerUrl = 'http://www.sports-reference.com' + playerHref
+				print 'New url: ' + playerUrl
+
 
 
 
