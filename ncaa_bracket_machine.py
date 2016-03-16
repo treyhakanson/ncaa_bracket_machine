@@ -153,6 +153,12 @@ class Player(object):
 
 			print self.per, self.tm, self.advurl
 
+	def set_per(self, num):
+		self.per = num
+
+	def set_tm(self, num):
+		self.tm = num
+
 baseUrl = 'http://espn.go.com/mens-college-basketball/teams'
 concatingUrl = 'http://espn.go.com'
 allTeamUrls = np.empty((64,3), dtype=object)
@@ -292,52 +298,73 @@ for k, singleTeamUrls in enumerate(allTeamUrls, start=0):
 if (needsSave):
 	np.save('numpys/long_team_names.npy', longTeamNames)
 
-if (allPlayers[63][0].advurl == None or allPlayers[63][0].advurl == '')
-	for i, playerGroup in enumerate(allPlayers):
-		print '------------------'
-		for j, player in enumerate(playerGroup):
-			playerUrl = player.make_player_url()
-			url = urllib.urlopen(playerUrl)
-			playerSoup = bs(url, 'lxml')
-			print playerUrl,
-			if (playerSoup.find('h1') != None):
-				# ON THE CORRECT PAGE
-				player.add_extra_metrics(playerSoup, playerUrl)
-				print playerSoup.find('h1').get_text()
-			else:
-				if (playerSoup.select('#search_results > tbody > tr') == None):
-					print '********CHECK URL**********'
+if (savedAllPlayers.size == 0):
+	if (allPlayers[63][0].advurl == None or allPlayers[63][0].advurl == ''):
+		for i, playerGroup in enumerate(allPlayers):
+			print '------------------'
+			for j, player in enumerate(playerGroup):
+				playerUrl = player.make_player_url()
+				url = urllib.urlopen(playerUrl)
+				playerSoup = bs(url, 'lxml')
+				print playerUrl,
+				if (playerSoup.find('h1') != None):
+					# ON THE CORRECT PAGE
+					player.add_extra_metrics(playerSoup, playerUrl)
+					print playerSoup.find('h1').get_text()
 				else:
-					trs = playerSoup.select('#search_results > tbody > tr')
-					if (len(trs) != 0):
-						desiredPlayerTr = trs[len(trs) - 1]
-						playerHref = desiredPlayerTr.select('a')[0]['href']
-						playerUrl = 'http://www.sports-reference.com' + playerHref
-						print playerUrl,
-						newPlayerUrl = urllib.urlopen(playerUrl)
-						newPlayerSoup = bs(newPlayerUrl, 'lxml')
-						if (newPlayerSoup.find('h1') != None):
-							# ON THE CORRECT PAGE
-							player.add_extra_metrics(newPlayerSoup, playerUrl)
-							print newPlayerSoup.find('h1').get_text()
-						else:
-							print '********CHECK URL**********'
+					if (playerSoup.select('#search_results > tbody > tr') == None):
+						print '********CHECK URL**********'
 					else:
-						playerUrl = playerUrl.replace('.html', '-1.html')
-						newPlayerUrl = urllib.urlopen(playerUrl)
-						newPlayerSoup = bs(newPlayerUrl, 'lxml')
-						print playerUrl,
-						if (newPlayerSoup.find('h1') != None):
-							# ON THE CORRECT PAGE
-							player.add_extra_metrics(newPlayerSoup, playerUrl)
-							print newPlayerSoup.find('h1').get_text()
+						trs = playerSoup.select('#search_results > tbody > tr')
+						if (len(trs) != 0):
+							desiredPlayerTr = trs[len(trs) - 1]
+							playerHref = desiredPlayerTr.select('a')[0]['href']
+							playerUrl = 'http://www.sports-reference.com' + playerHref
+							print playerUrl,
+							newPlayerUrl = urllib.urlopen(playerUrl)
+							newPlayerSoup = bs(newPlayerUrl, 'lxml')
+							if (newPlayerSoup.find('h1') != None):
+								# ON THE CORRECT PAGE
+								player.add_extra_metrics(newPlayerSoup, playerUrl)
+								print newPlayerSoup.find('h1').get_text()
+							else:
+								print '********CHECK URL**********'
 						else:
-							print '********CHECK URL**********'
-			allPlayers[i][j] = player
-	np.save('all_players.npy', allPlayers)
+							playerUrl = playerUrl.replace('.html', '-1.html')
+							newPlayerUrl = urllib.urlopen(playerUrl)
+							newPlayerSoup = bs(newPlayerUrl, 'lxml')
+							print playerUrl,
+							if (newPlayerSoup.find('h1') != None):
+								# ON THE CORRECT PAGE
+								player.add_extra_metrics(newPlayerSoup, playerUrl)
+								print newPlayerSoup.find('h1').get_text()
+							else:
+								print '********CHECK URL**********'
+				allPlayers[i][j] = player
+		if (savedAllPlayers.size == 0):
+			np.save('numpys/all_players.npy', allPlayers)
 
+# PRINT STATEMENT FOR PLAYERS
+# for i, team in enumerate(allPlayers):
+# 	print '\n************************'
+# 	print team[0].team.upper()
+# 	print '************************'
+# 	for j, player in enumerate(team):
+# 		print player.name + '\t\t\t',
+# 		print str(player.ht) + '\t',
+# 		print str(player.per) + '\t',
+# 		print str(player.tm)
+# 	print '************************\n'
 
-
+# IF STATEMENT FOR PLAYERS WHO HAD NO ADVANCED STATISTICS
+# if (player.name.lower() == 'chase miller' 
+# 			or player.name.lower() == 'stephen strachan' 
+# 			or player.name.lower() == 'stefan duric' 
+# 			or player.name.lower() == 'david runcie'
+# 			or player.name.lower() == 'tre houston'
+# 			or player.name.lower() == 'eugene marshall iii'
+# 			or player.name.lower() == 'anton grady'
+# 			or player.name.lower() == 'tai wynyard'):
 
 
 
