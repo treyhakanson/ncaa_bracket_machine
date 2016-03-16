@@ -121,12 +121,22 @@ class Player(object):
 		playerUrl = playerRefBaseUrl.replace('PLAYER_NAME', formattedPlayerName)
 		return playerUrl
 
+	def add_extra_metrics(soup):
+		1
+
 baseUrl = 'http://espn.go.com/mens-college-basketball/teams'
 concatingUrl = 'http://espn.go.com'
 allTeamUrls = np.empty((64,3), dtype=object)
 allPlayers = np.zeros(64, dtype=object)
 
 allGames = [['Kansas', 'Austin Peay'],['Colorado', 'UConn'], ['Maryland', 'South Dakota St'], ['Cal', 'Hawaii'], ['Arizona', 'Wichita State'], ['Miami', 'Buffalo'], ['Iowa', 'Temple'], ['Villanova', 'UNC Asheville'], ['Oregon', 'Southern'], ['Saint Joe\'s', 'Cincinnati'], ['Baylor', 'Yale'], ['Duke', 'UNC Wilmington'], ['Texas', 'Northern Iowa'], ['Texas A&M', 'Green Bay'], ['Oregon State', 'VCU'], ['Oklahoma', 'CSU Bakersfield'], ['UNC', 'FGCU'], ['USC', 'Providence'], ['Indiana', 'Chattanooga'], ['Kentucky', 'Stony Brook'], ['Notre Dame', 'Michigan'], ['West Virginia', 'SF Austin'], ['Wisconsin', 'Pitt'], ['Xavier', 'Weber State'], ['UVA', 'Hampton'], ['Texas Tech', 'Butler'], ['Purdue', 'AR-Little Rock'], ['Iowa State', 'Iona'], ['Seton Hall', 'Gonzaga'], ['Utah', 'Fresno State'], ['Dayton', 'Syracuse'], ['Michigan State', 'Mid Tennessee']]
+
+if (os.path.isfile('numpys/long_team_names.npy')):
+	longTeamNames = np.load('numpys/long_team_names.npy')
+	needsSave = False
+else:
+	longTeamNames = np.empty(0)
+
 allTeamsHTML = urllib.urlopen(baseUrl)
 soup = bs(allTeamsHTML, 'lxml')
 
@@ -134,8 +144,8 @@ i = 0
 j = 0
 
 # check if the file exists before attempting to open it
-if (os.path.isfile('all_team_urls.npy')):
-	savedAllTeamsUrls = np.load('all_team_urls.npy')
+if (os.path.isfile('numpys/all_team_urls.npy')):
+	savedAllTeamsUrls = np.load('numpys/all_team_urls.npy')
 else:
 	savedAllTeamsUrls = np.zeros(0)
 
@@ -151,12 +161,12 @@ if (savedAllTeamsUrls.size == 0):
 						j += 1
 					i += 1
 					j = 0
-	np.save('all_team_urls.npy', allTeamUrls)
+	np.save('numpys/all_team_urls.npy', allTeamUrls)
 else:
 	allTeamUrls = savedAllTeamsUrls
 
-if (os.path.isfile('all_players.npy')):
-	savedAllPlayers = np.load('all_players.npy')
+if (os.path.isfile('numpys/all_players.npy')):
+	savedAllPlayers = np.load('numpys/all_players.npy')
 	allPlayers = savedAllPlayers
 else:
 	savedAllPlayers = np.zeros(0)
@@ -170,9 +180,50 @@ for k, singleTeamUrls in enumerate(allTeamUrls, start=0):
 			# stats url
 			# print 'pass'
 		elif (i == 1):
-			1
 			# schedule url
-			# print 'pass'
+			if (longTeamNames.size == 0 or longTeamNames[63] == ''):
+				needsSave = True
+				longTeamNames = np.empty(64, dtype=str)
+				print '********************'
+				teamsPlayedInTourney = ''
+				indexOfTeam = ''
+				testHTML = urllib.urlopen(url)
+				urlSoup = bs(testHTML, 'lxml')
+				currTeamName = urlSoup.find('b').get_text()
+				longTeamNames[k] = currTeamName
+				print currTeamName.upper()
+				trs = urlSoup.select('tr')
+				lis = urlSoup.select('li.team-name')
+				for j, li in enumerate(lis[:-1]):
+					if (li.find('a') != None):
+						vsTeamName = li.find('a').get_text()
+					else:
+						vsTeamName = li.get_text()
+					for game in allGames:
+						for team in game:
+							if (team == vsTeamName):
+								teamsPlayedInTourney += (vsTeamName + ',')
+								indexOfTeam += (str(j) + ',')
+				numTeamsPlayed = teamsPlayedInTourney.count(',')
+				if (numTeamsPlayed != 0):
+					teamsPlayedNumpy = np.empty((numTeamsPlayed, 4), dtype=object)
+					indexOfTeamArr = indexOfTeam.split(',')
+					for i, teamPlayed in enumerate(teamsPlayedInTourney.split(',')):
+						if (teamPlayed != ''):
+							teamsPlayedNumpy[i][0] = currTeamName
+							teamsPlayedNumpy[i][1] = teamPlayed
+							if (len(trs[int(indexOfTeamArr[i]) + 2].select('li.game-status')) > 1):
+								teamsPlayedNumpy[i][2] = trs[int(indexOfTeamArr[i]) + 2].select('li.game-status')[1].get_text()
+							else:
+								teamsPlayedNumpy[i][2] = trs[int(indexOfTeamArr[i]) + 2].select('li.game-status')[0].get_text()
+							teamsPlayedNumpy[i][3] = trs[int(indexOfTeamArr[i]) + 2].select('li.score')[0].get_text()
+					saveName = 'numpys/' + currTeamName.lower().replace(' ', '_') + '_schedule.npy'
+					np.save(saveName, teamsPlayedNumpy)
+					print saveName
+					print teamsPlayedNumpy
+				else:
+					print currTeamName + ' played no teams in the tournament.'
+				print '********************'
 		else:
 			#roster url
 			if (savedAllPlayers.size == 0):
@@ -208,7 +259,9 @@ for k, singleTeamUrls in enumerate(allTeamUrls, start=0):
 
 	if (savedAllPlayers.size == 0):
 		allPlayers[k] = playerArr
-		np.save('all_players.npy', allPlayers)
+		np.save('numpys/all_players.npy', allPlayers)
+if (needsSave):
+	np.save('numpys/long_team_names.npy', longTeamNames)
 
 # for playerGroup in allPlayers:
 # 	print '------------------'
@@ -218,18 +271,38 @@ for k, singleTeamUrls in enumerate(allTeamUrls, start=0):
 # 		playerSoup = bs(url, 'lxml')
 # 		print playerUrl,
 # 		if (playerSoup.find('h1') != None):
+# 			# ON THE CORRECT PAGE
+# 			player.add_extra_metrics(playerSoup)
 # 			print playerSoup.find('h1').get_text()
 # 		else:
 # 			if (playerSoup.select('#search_results > tbody > tr') == None):
 # 				print '********CHECK URL**********'
 # 			else:
 # 				trs = playerSoup.select('#search_results > tbody > tr')
-# 				print trs
-# 				print str(len(trs) - 1)
-# 				desiredPlayerTr = trs[len(trs) - 1]
-# 				playerHref = desiredPlayerTr.select('a')[0]['href']
-# 				playerUrl = 'http://www.sports-reference.com' + playerHref
-# 				print 'New url: ' + playerUrl
+# 				if (len(trs) != 0):
+# 					desiredPlayerTr = trs[len(trs) - 1]
+# 					playerHref = desiredPlayerTr.select('a')[0]['href']
+# 					playerUrl = 'http://www.sports-reference.com' + playerHref
+# 					print playerUrl,
+# 					newPlayerUrl = urllib.urlopen(playerUrl)
+# 					newPlayerSoup = bs(newPlayerUrl, 'lxml')
+# 					if (newPlayerSoup.find('h1') != None):
+# 						# ON THE CORRECT PAGE
+# 						player.add_extra_metrics(playerSoup)
+# 						print newPlayerSoup.find('h1').get_text()
+# 					else:
+# 						print '********CHECK URL**********'
+# 				else:
+# 					newPlayerUrl = urllib.urlopen(playerUrl.replace('.html', '-1.html'))
+# 					newPlayerSoup = bs(newPlayerUrl, 'lxml')
+# 					print playerUrl.replace('.html', '-1.html'),
+# 					if (newPlayerSoup.find('h1') != None):
+# 						# ON THE CORRECT PAGE
+# 						player.add_extra_metrics(playerSoup)
+# 						print newPlayerSoup.find('h1').get_text()
+# 					else:
+# 						print '********CHECK URL**********'
+
 
 
 
