@@ -18,6 +18,8 @@ class Player(object):
 		self.per = 0.0
 		self.tm = 0
 		self.advurl = ''
+		self.made3s = 0.0
+		self.per3s = 0.0
 
 	def make_player_url(self):
 		playerRefBaseUrl = 'http://www.sports-reference.com/cbb/players/PLAYER_NAME.html'
@@ -124,13 +126,13 @@ class Player(object):
 		playerUrl = playerRefBaseUrl.replace('PLAYER_NAME', formattedPlayerName)
 		return playerUrl
 
-	def add_extra_metrics(self, soup, url):
+	def add_extra_metrics(self, soup, url):			
+		per100trs = soup.select('#players_per_poss > tbody > tr')
 		advancedTrs = soup.select('#players_advanced > tbody > tr')
 		if (len(advancedTrs) == 0):
 			self.per = 0.0
 			self.tm = 0
 			self.advurl = url
-			print 'NO GAME DATA AVAILABLE'
 		else:
 			lastTr = advancedTrs[len(advancedTrs) - 1]
 			self.advurl = url
@@ -138,20 +140,48 @@ class Player(object):
 				self.per = float(lastTr.select('td')[5].get_text())
 				self.tm = int(lastTr.select('td')[4].get_text())
 			elif (lastTr.select('td')[5].get_text() == '' and lastTr.select('td')[4].get_text() != ''):
-				print 'NO PER AVAILABLE'
 				self.per = 0.0
 				self.tm = int(lastTr.select('td')[4].get_text())
 			elif (lastTr.select('td')[5].get_text() != '' and lastTr.select('td')[4].get_text() == ''):
-				print 'NO TM AVAILABLE'
 				self.per = float(lastTr.select('td')[5].get_text())
 				self.mp = 0
 			else:
 				self.per = 0.0
 				self.tm = 0
 				self.advurl = url
-				print 'NO GAME DATA AVAILABLE'
-
-			print self.per, self.tm, self.advurl
+			print self.per, self.tm,
+		if (len(per100trs) == 0):
+			self.made3s = 0.0
+			self.per3s = 0.0
+		else:
+			lastTr = per100trs[len(per100trs) - 1]
+			self.advurl = url
+			if (lastTr.select('td')[11].get_text() != '' and lastTr.select('td')[13].get_text() != ''):
+				self.made3s = float(lastTr.select('td')[11].get_text())
+				self.per3s = float(lastTr.select('td')[13].get_text())
+			elif (lastTr.select('td')[13].get_text() == '' and lastTr.select('td')[11].get_text() != ''):
+				self.per3s = 0.0
+				self.made3s = float(lastTr.select('td')[11].get_text())
+			elif (lastTr.select('td')[13].get_text() != '' and lastTr.select('td')[11].get_text() == ''):
+				self.per3s = float(lastTr.select('td')[13].get_text())
+				self.made3s = 0.0
+			else:
+				self.made3s = 0.0
+				self.per3s = 0.0
+				self.advurl = url
+			if (lastTr.select('td')[5].get_text() != ''):
+				self.madefgs = float(lastTr.select('td')[5].get_text())
+			else:
+				self.madefgs = 0.0
+			if (lastTr.select('td')[7].get_text() != ''):
+				self.perfgs = float(lastTr.select('td')[7].get_text())
+			else:
+				self.perfgs = 0.0
+			if (lastTr.select('td')[14].get_text() != ''):
+				self.madefts = float(lastTr.select('td')[14].get_text())
+			else:
+				self.madefts = 0.0
+			print self.made3s, self.per3s
 
 	def set_per(self, num):
 		self.per = num
@@ -345,18 +375,21 @@ if (savedAllPlayers.size == 0):
 			np.save('numpys/all_players.npy', allPlayers)
 
 # PRINT STATEMENT FOR PLAYERS
-# for i, team in enumerate(allPlayers):
-# 	print '\n************************'
-# 	print team[0].team.upper()
-# 	print '************************'
-# 	for j, player in enumerate(team):
-# 		print player.name + '\t',
-# 		print str(player.ht) + '\t',
-# 		print str(player.wt) + '\t',
-# 		print str(player.pos) + '\t',
-# 		print str(player.per) + '\t',
-# 		print str(player.tm)
-# 	print '************************\n'
+for i, team in enumerate(allPlayers):
+	print '\n************************'
+	print team[0].team.upper()
+	print '************************'
+	for j, player in enumerate(team):
+		print player.name
+		print str(player.ht) + '\t',
+		print str(player.wt) + '\t',
+		print str(player.pos) + '\t',
+		print str(player.per) + '\t',
+		print str(player.made3s) + '\t',
+		print str(player.per3s) + '\t',
+		print str(player.tm) + '\n'
+	print '************************\n'
+	print '************************\n'
 
 # IF STATEMENT FOR PLAYERS WHO HAD NO ADVANCED STATISTICS
 # if (player.name.lower() == 'chase miller' 
@@ -368,8 +401,8 @@ if (savedAllPlayers.size == 0):
 # 			or player.name.lower() == 'anton grady'
 # 			or player.name.lower() == 'tai wynyard'):
 
-for team in longTeamNames:
-	print team.lower()
+# for team in longTeamNames:
+# 	print team.lower()
 
 
 
