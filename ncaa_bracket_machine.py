@@ -20,6 +20,12 @@ class Player(object):
 		self.advurl = ''
 		self.made3s = 0.0
 		self.per3s = 0.0
+		self.madefts = 0.0
+		self.perfts = 0.0
+		self.asts = 0.0
+		self.tos = 0.0
+		self.ortg = 0.0
+		self.drtg = 0.0
 
 	def make_player_url(self):
 		playerRefBaseUrl = 'http://www.sports-reference.com/cbb/players/PLAYER_NAME.html'
@@ -181,6 +187,26 @@ class Player(object):
 				self.madefts = float(lastTr.select('td')[14].get_text())
 			else:
 				self.madefts = 0.0
+			if (lastTr.select('td')[16].get_text() != ''):
+				self.perfts = lastTr.select('td')[16].get_text()
+			else:
+				self.perfts = 0.0
+			if (lastTr.select('td')[18].get_text() != ''):
+				self.asts = float(lastTr.select('td')[18].get_text())
+			else:
+				self.asts = 0.0
+			if (lastTr.select('td')[21].get_text() != ''):
+				self.tos = float(lastTr.select('td')[21].get_text())
+			else:
+				self.tos = 0.0
+			if (lastTr.select('td')[24].get_text() != ''):
+				self.ortg = float(lastTr.select('td')[24].get_text())
+			else:
+				self.ortg = 0.0
+			if (lastTr.select('td')[25].get_text() != ''):
+				self.drtg = float(lastTr.select('td')[25].get_text())
+			else:
+				self.drtg = 0.0
 			print self.made3s, self.per3s
 
 	def set_per(self, num):
@@ -386,6 +412,12 @@ for i, team in enumerate(allPlayers):
 		print str(player.pos) + '\t',
 		print str(player.per) + '\t',
 		print str(player.made3s) + '\t',
+		print str(player.madefts) + '\t',
+		print str(player.perfts) + '\t',
+		print str(player.asts) + '\t',
+		print str(player.tos) + '\t',
+		print str(player.ortg) + '\t',
+		print str(player.drtg) + '\t',
 		print str(player.per3s) + '\t',
 		print str(player.tm) + '\n'
 	print '************************\n'
